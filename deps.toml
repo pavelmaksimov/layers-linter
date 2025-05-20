@@ -1,0 +1,145 @@
+exclude_modules = ["*.__init__"] # исключает модули из проверки
+
+
+[layers]
+
+[layers.dicontainer]
+description = ""
+contains_modules = [
+    "example_project.container"
+]
+upstream = ["presentation"] # Другие слои кроме этих не могут использовать этот слой
+downstream = ["usecases", "infrastructure", "libs", "domainhelpers"]
+
+
+[layers.usecases]
+description = ""
+contains_modules = [
+    "example_project.domains.*.use_cases.*",
+    "example_project.domains.*.use_cases",
+]
+upstream = ["dicontainer", "presentation"]
+# downstream = "none" # Если не указан, значит не запрещено, нет правил нет ограничений
+downstream = ["libs", "domainhelpers"]
+
+
+[layers.validation]
+description = ""
+contains_modules = [
+    "example_project.domains.*.validations.*",
+    "example_project.domains.*.validations",
+]
+upstream = ["usecases"]
+downstream = ["libs", "domainhelpers"]
+
+
+[layers.services]
+description = ""
+contains_modules = [
+    "example_project.domains.*.services.*",
+    "example_project.domains.*.service",
+]
+upstream = ["usecases", "services"]
+downstream = ["core", "libs", "domainhelpers"]
+
+
+[layers.core]
+description = ""
+contains_modules = [
+    "example_project.domains.*.aggregates.*",
+    "example_project.domains.*.aggregates",
+    "example_project.domains.*.entities.*",
+    "example_project.domains.*.entities",
+    "example_project.domains.*.value_objects.*",
+    "example_project.domains.*.value_objects",
+]
+upstream = ["usecases", "services"]
+downstream = ["libs", "domainhelpers"]
+
+
+[layers.infrastructure]
+description = ""
+contains_modules = [
+    "example_project.infrastructure.*",
+    "example_project.domains.*.repositories.*",
+    "example_project.domains.*.repositories",
+    "example_project.domains.*.repository",
+    "example_project.domains.*.models.*",
+    "example_project.domains.*.models",
+]
+upstream = "none" # Если не указан, значит не запрещено, нет правил нет ограничений
+downstream = ["libs"]
+
+
+[layers.presentation]
+description = ""
+contains_modules = [
+    "example_project.presentation.*",
+    "example_project.domains.*.endpoints.*",
+    "example_project.domains.*.endpoints",
+    "example_project.domains.*.resources.*",
+    "example_project.domains.*.resources",
+    "example_project.domains.*.views.*",
+    "example_project.domains.*.views",
+    "example_project.domains.*.handlers.*",
+    "example_project.domains.*.handlers",
+    "example_project.domains.*.cli.*",
+    "example_project.domains.*.cli",
+]
+isolated-from-layers = ["services", "core"]
+upstream = [] # Не может быть использован в других слоях.
+downstream = ["dicontainer", "usecases", "libs"]
+
+
+[layers.autonomy]
+description = ""
+contains_modules = [
+    "example_project.alembic.*",
+]
+upstream = [] # Не может быть использован в других слоях.
+downstream = [] # Не может использовать другие слои.
+
+
+[layers.libs]
+description = ""
+contains_modules = [
+    "example_project.logger",
+    "example_project.datatypes",
+    "example_project.types",
+    "example_project.settings",
+    "example_project.utils.*",
+    "example_project.utils",
+    "example_project.libs.*",
+    "example_project.libs",
+    "example_project.exceptions",
+]
+upstream = "none"
+downstream = [] # Не может использовать другие слои.
+
+
+[layers.domainhelpers]
+description = ""
+contains_modules = [
+    "example_project.domains.*.interfaces",
+    "example_project.domains.*.schemas",
+    "example_project.domains.*.dto",
+    "example_project.domains.*.enums",
+    "example_project.domains.*.exceptions",
+]
+upstream = "none"
+downstream = ["libs"]
+
+
+# Условия на зависимость от библиотек и фреймворков.
+[libs]
+[libs.sqlalchemy]
+upstream = ["infrastructure"] # Эи слои могут импортировать этот пакет, а другие нет.
+
+[libs.pydantic]
+upstream = ["helpers"]
+
+[libs.fastapi]
+upstream = ["presentation"]
+
+[libs.argparse]
+upstream = ["presentation"]

@@ -1,0 +1,40 @@
+[project]
+name = "layers-linter"
+version = "1.0.0"
+description = "A static code analyzer that enforces architectural boundaries for layers and outher libraries"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[project.optional-dependencies]
+flake8 = [
+    "flake8>=7.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pavelmaksimov/layers-linter"
+"Bug Tracker" = "https://github.com/pavelmaksimov/layers-linter/issues"
+
+[project.entry-points."flake8.extension"]
+LA = "layers_linter.flake8_plugin:LayersLinter"
+
+[project.scripts]
+la-linter = "layers_linter.cli:main"
+layers-linter = "layers_linter.cli:main"
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py311"
+include = ["src/**/*.py", "tests/**/*.py", "examples/**/*.py"]
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint.flake8-copyright]
+author = "Ruff"
