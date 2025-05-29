@@ -1,4 +1,3 @@
-# File: tests/test_layer_linter.py
 import pytest
 
 from src.layers_linter.analyzer import analyze_dependencies

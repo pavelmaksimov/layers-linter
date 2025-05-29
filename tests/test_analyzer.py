@@ -1,4 +1,3 @@
-# File: tests/test_layer_linter.py
 import pytest
 
 from src.layers_linter.analyzer import analyze_dependencies
@@ -10,12 +9,10 @@ def temp_project(tmp_path):
     """Create a temporary project structure with the given config."""
 
     def create_project(toml_config: str, project_structure: dict):
-        # Create config file
         config_path = tmp_path / "deps.toml"
         with open(config_path, "w") as f:
             f.write(toml_config)
 
-        # Create project files
         project_dir = tmp_path / "project"
         project_dir.mkdir()
 
