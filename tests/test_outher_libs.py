@@ -31,6 +31,11 @@ def temp_project(tmp_path):
 
 
 def test_valid_dependency(temp_project):
+    """
+    Tests that the analyzer correctly validates dependencies between layers
+    and external libraries when they are properly configured in the configuration file.
+    Checks that layers can use libraries that are specified in their upstream list.
+    """
     toml_config = """
 exclude_modules = []
 
@@ -84,6 +89,11 @@ import fastapi
 
 
 def test_invalid_library_usage(temp_project):
+    """
+    Tests that the analyzer correctly identifies invalid library usage
+    when a layer imports a library that is not specified in its upstream list.
+    Verifies that the correct error code (LA020) is reported.
+    """
     toml_config = """
 exclude_modules = []
 

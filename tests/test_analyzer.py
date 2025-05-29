@@ -31,6 +31,10 @@ def temp_project(tmp_path):
 
 
 def test_invalid_dependency(temp_project):
+    """
+    Tests that the analyzer correctly identifies an invalid dependency where
+    infrastructure imports from domain when it's not allowed in the configuration.
+    """
     toml_config = """
 exclude_modules = []
 
@@ -62,6 +66,11 @@ downstream = []
 
 
 def test_valid_dependency_downstream(temp_project):
+    """
+    Tests that the analyzer correctly identifies a dependency violation when
+    domain imports from infrastructure, which is allowed in the downstream configuration
+    but still reported as a problem because it's not in the upstream configuration.
+    """
     toml_config = """
 exclude_modules = []
 
@@ -93,6 +102,11 @@ downstream = []
 
 
 def test_valid_dependency_upstream(temp_project):
+    """
+    Tests that the analyzer correctly identifies a dependency violation when
+    domain imports from infrastructure, which is not allowed in the configuration
+    because domain is not in infrastructure's downstream list.
+    """
     toml_config = """
 exclude_modules = []
 
@@ -122,6 +136,10 @@ downstream = []
 
 
 def test_type_checking_import(temp_project):
+    """
+    Tests that the analyzer correctly ignores imports that are inside TYPE_CHECKING blocks,
+    as these are only used for type hints and don't create actual runtime dependencies.
+    """
     toml_config = """
 exclude_modules = []
 
@@ -157,6 +175,10 @@ if TYPE_CHECKING:
 
 
 def test_exclude_modules(temp_project):
+    """
+    Tests that the analyzer correctly excludes modules specified in the exclude_modules list,
+    preventing them from being checked for dependency violations.
+    """
     toml_config = """
 exclude_modules = ["*.db"]
 
@@ -186,6 +208,11 @@ downstream = []
 
 
 def test_invalid_dependency2(temp_project):
+    """
+    Tests that the analyzer correctly identifies multiple dependency violations
+    when neither layer has downstream or upstream configurations that allow
+    the dependencies between them.
+    """
     toml_config = """
 exclude_modules = []
 
