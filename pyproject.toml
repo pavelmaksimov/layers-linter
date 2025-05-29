@@ -1,9 +1,9 @@
 [project]
 name = "layers-linter"
-version = "1.0.0"
+version = "1.0.1"
 description = "A static code analyzer that enforces architectural boundaries for layers and outher libraries"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
