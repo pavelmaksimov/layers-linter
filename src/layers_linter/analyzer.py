@@ -25,6 +25,10 @@ class Problem(ABC):
     def message(self) -> str:
         raise NotImplementedError("Subclasses must implement this property")
 
+    @property
+    def file_path(self) -> str:
+        return self.module_path.replace(".", "/") + ".py"
+
 
 @dataclass
 class LayerProblem(Problem):
@@ -36,7 +40,7 @@ class LayerProblem(Problem):
         return f"Invalid dependency from layer '{self.layer_from}' to layer '{self.layer_to}'"
 
     def __str__(self):
-        return f"{self.module_path}:{self.line_number}: {self.message}"
+        return f"{self.file_path}:{self.line_number}: {self.message}"
 
 
 @dataclass
@@ -50,7 +54,7 @@ class LibProblem(Problem):
         return f"Layers [{layers_str}] cannot use restricted library '{self.lib_name}'"
 
     def __str__(self):
-        return f"{self.module_path}:{self.line_number}: {self.message}"
+        return f"{self.file_path}:{self.line_number}: {self.message}"
 
 
 def analyze_dependencies(
