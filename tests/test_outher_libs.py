@@ -105,7 +105,7 @@ contains_modules = ["project.infrastructure.*"]
 
 [libs]
 [libs.sqlalchemy]
-allowed_in = ["infrastructure"]
+upstream = ["infrastructure"]
 """
 
     project_structure = {"domain/service.py": """import sqlalchemy"""}

@@ -49,7 +49,8 @@ def load_config(
 
     libs = {}
     for lib_name, lib_info in libs_config.items():
-        allowed_in = lib_info.get("allowed_in", "none")
+        # Check for allowed_in or upstream (backward compatibility)
+        allowed_in = lib_info.get("allowed_in", lib_info.get("upstream", "none"))
         if allowed_in == "none":
             allowed_in_parsed = None
         elif isinstance(allowed_in, list):

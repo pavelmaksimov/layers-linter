@@ -1,3 +1,4 @@
+from abc import ABC
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -14,20 +15,42 @@ from layers_linter.search_modules import (
 
 
 @dataclass
-class Problem:
+class Problem(ABC):
     line_number: int
     module_path: str
     imported_module: str
+    code: str
+
+    @property
+    def message(self) -> str:
+        raise NotImplementedError("Subclasses must implement this property")
+
+
+@dataclass
+class LayerProblem(Problem):
     layer_from: str
     layer_to: str
-    code: str
-    message: str
+
+    @property
+    def message(self) -> str:
+        return f"Invalid dependency from layer '{self.layer_from}' to layer '{self.layer_to}'"
 
     def __str__(self):
-        return (
-            f"{self.module_path}:{self.line_number}: [{self.layer_from}] {self.module_path}"
-            f" -> [{self.layer_to}] {self.imported_module} ({self.code}: {self.message})"
-        )
+        return f"{self.module_path}:{self.line_number}: {self.message}"
+
+
+@dataclass
+class LibProblem(Problem):
+    lib_name: str
+    layers: List[str]
+
+    @property
+    def message(self) -> str:
+        layers_str = "', '".join(self.layers)
+        return f"Layers [{layers_str}] cannot use restricted library '{self.lib_name}'"
+
+    def __str__(self):
+        return f"{self.module_path}:{self.line_number}: {self.message}"
 
 
 def analyze_dependencies(
@@ -89,14 +112,13 @@ def analyze_dependencies(
                 for la_name in layers_a:
                     for lb_name in layers_b:
                         problems.append(
-                            Problem(
+                            LayerProblem(
                                 line_number=lineno,
                                 module_path=module_path,
                                 imported_module=imported_module,
                                 layer_from=la_name,
                                 layer_to=lb_name,
                                 code="LA001",
-                                message=f"Invalid dependency from layer '{la_name}' to layer '{lb_name}'",
                             )
                         )
 
@@ -133,16 +155,14 @@ def analyze_dependencies(
                         break
 
                 if not allowed:
-                    layers_str = "', '".join(layers_a)
                     problems.append(
-                        Problem(
+                        LibProblem(
                             line_number=lineno,
                             module_path=module_path,
                             imported_module=imported_module,
-                            layer_from="none",
-                            layer_to="none",
                             code="LA020",
-                            message=f"Layers [{layers_str}] cannot use restricted library '{lib_name}'",
+                            lib_name=lib_name,
+                            layers=layers_a,
                         )
                     )
 
