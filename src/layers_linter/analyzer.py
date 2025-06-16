@@ -101,7 +101,6 @@ def analyze_dependencies(
             for la_name in layers_a:
                 for lb_name in layers_b:
                     la = layers[la_name]
-                    lb = layers[lb_name]
 
                     # Depends_on check: layer A can only depend on those specified in depends_on.
                     depends_on_ok = True
