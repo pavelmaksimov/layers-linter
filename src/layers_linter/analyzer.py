@@ -79,6 +79,12 @@ def analyze_dependencies(
                     module_to_layers[module_path].append(layer_name)
                     break
 
+    # Check for modules that belong to multiple layers
+    for module_path, module_layers in module_to_layers.items():
+        if len(module_layers) > 1:
+            layers_str = ", ".join(module_layers)
+            raise ValueError(f"Module '{module_path}' belongs to multiple layers: [{layers_str}]")
+
     module_imports = collect_imports(all_project_modules, modules_list)
 
     problems = []

@@ -221,3 +221,39 @@ depends_on = []
     problems = analyze_dependencies(project_root, layers, libs, [])
 
     assert len(problems) == 2
+
+
+def test_module_in_multiple_layers(temp_project):
+    """
+    Tests that the analyzer raises ValueError when a module belongs to multiple layers.
+    """
+    toml_config = """
+exclude_modules = []
+
+[layers]
+[layers.domain]
+contains_modules = ["project.shared.*", "project.domain.*"]
+depends_on = []
+
+[layers.infrastructure]
+contains_modules = ["project.shared.*", "project.infrastructure.*"]
+depends_on = []
+"""
+
+    project_structure = {
+        "shared/common.py": """# This module belongs to both domain and infrastructure layers""",
+        "domain/service.py": """# This module belongs only to domain layer""",
+        "infrastructure/db.py": """# This module belongs only to infrastructure layer""",
+    }
+
+    config_path = temp_project(toml_config, project_structure)
+    layers, libs, exclude_modules = load_config(config_path)
+    project_root = config_path.parent / "project"
+
+    with pytest.raises(ValueError) as excinfo:
+        analyze_dependencies(project_root, layers, libs, [])
+
+    # Check that the error message contains the module path and layer names
+    assert "project.shared.common" in str(excinfo.value)
+    assert "domain" in str(excinfo.value)
+    assert "infrastructure" in str(excinfo.value)
