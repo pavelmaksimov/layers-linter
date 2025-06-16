@@ -12,8 +12,8 @@ def main():
         "--config",
         type=Path,
         nargs="?",
-        default="deps.toml",
-        help="Path to configuration file (default: deps.toml)",
+        default="layers.toml",
+        help="Path to configuration file (default: layers.toml)",
     )
     args = parser.parse_args()
 

@@ -8,7 +8,7 @@ description = ""
 contains_modules = [
     "example_project.container"
 ]
-depends_on = ["usecases", "infrastructure", "libs", "domainhelpers"]
+depends_on = ["usecases", "infrastructure", "libs", "libs"]
 
 
 [layers.usecases]
@@ -17,7 +17,7 @@ contains_modules = [
     "example_project.domains.*.use_cases.*",
     "example_project.domains.*.use_cases",
 ]
-depends_on = ["libs", "domainhelpers"]
+depends_on = ["libs", "libs"]
 
 
 [layers.validation]
@@ -26,7 +26,7 @@ contains_modules = [
     "example_project.domains.*.validations.*",
     "example_project.domains.*.validations",
 ]
-depends_on = ["libs", "domainhelpers"]
+depends_on = ["libs", "libs"]
 
 
 [layers.services]
@@ -35,7 +35,7 @@ contains_modules = [
     "example_project.domains.*.services.*",
     "example_project.domains.*.service",
 ]
-depends_on = ["core", "libs", "domainhelpers"]
+depends_on = ["core", "libs", "libs"]
 
 
 [layers.core]
@@ -48,7 +48,7 @@ contains_modules = [
     "example_project.domains.*.value_objects.*",
     "example_project.domains.*.value_objects",
 ]
-depends_on = ["libs", "domainhelpers"]
+depends_on = ["libs", "libs"]
 
 
 [layers.infrastructure]
@@ -96,25 +96,17 @@ contains_modules = [
     "example_project.logger",
     "example_project.datatypes",
     "example_project.settings",
-    "example_project.utils.*",
-    "example_project.utils",
-    "example_project.libs.*",
-    "example_project.libs",
-    "example_project.exceptions",
-    "example_project.domains.*.exceptions",
+    "*.utils.*",
+    "*.utils",
+    "*.libs.*",
+    "*.libs",
+    "*.exceptions",
+    "*.interfaces",
+    "*.schemas",
+    "*.dto",
+    "*.enums",
 ]
 depends_on = [] # Не может использовать другие слои.
-
-
-[layers.domainhelpers]
-description = ""
-contains_modules = [
-    "example_project.domains.*.interfaces",
-    "example_project.domains.*.schemas",
-    "example_project.domains.*.dto",
-    "example_project.domains.*.enums",
-]
-depends_on = ["libs"]
 
 
 # Условия на зависимость от библиотек и фреймворков.
@@ -123,7 +115,7 @@ depends_on = ["libs"]
 allowed_in = ["infrastructure"] # Эи слои могут импортировать этот пакет, а другие нет.
 
 [libs.pydantic]
-allowed_in = ["libs", "domainhelpers"]
+allowed_in = ["libs"]
 
 [libs.fastapi]
 allowed_in = ["presentation"]

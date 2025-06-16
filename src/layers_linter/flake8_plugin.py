@@ -47,7 +47,7 @@ class LayersLinter:
             "--la-config",
             type=str,
             dest="la_config",
-            help="Path to layers-linter configuration file (deps.toml)",
+            help="Path to layers-linter configuration file (layers.toml)",
             parse_from_config=True,
-            default="deps.toml",
+            default="layers.toml",
         )

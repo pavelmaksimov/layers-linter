@@ -26,14 +26,14 @@ pip install layers-linter[flake8]
 
 ### Command Line Interface
 
-Default path to deps.toml config in the current working directory.
+Default path to layers.toml config in the current working directory.
 
 ```bash
 # Basic usage
 layers-linter /path/to/your/project
 
 # With custom configuration file
-layers-linter /path/to/your/project --config /path/to/your/deps.toml
+layers-linter /path/to/your/project --config /path/to/your/layers.toml
 ```
 
 ### Flake8 Plugin
@@ -43,12 +43,12 @@ Add to your `.flake8` configuration:
 ```ini
 [flake8]
 select = LA
-la-config = deps.toml
+la-config = layers.toml
 ```
 
 Then run Flake8 as usual:
 
-Default path to deps.toml config in the current working directory.
+Default path to layers.toml config in the current working directory.
 
 ```bash
 flake8 /path/to/your/project [--la-config /path/to/your/config]
@@ -56,7 +56,7 @@ flake8 /path/to/your/project [--la-config /path/to/your/config]
 
 ## Configuration
 
-Layers Linter uses a TOML configuration file to define your project's architecture. By default, it looks for a file named `deps.toml` in the current directory.
+Layers Linter uses a TOML configuration file to define your project's architecture. By default, it looks for a file named `layers.toml` in the current directory.
 
 ### Configuration Format
 

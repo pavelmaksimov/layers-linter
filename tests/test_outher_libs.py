@@ -10,7 +10,7 @@ def temp_project(tmp_path):
 
     def create_project(toml_config: str, project_structure: dict):
         # Create config file
-        config_path = tmp_path / "deps.toml"
+        config_path = tmp_path / "layers.toml"
         with open(config_path, "w") as f:
             f.write(toml_config)
 
