@@ -53,8 +53,8 @@ class LibProblem(Problem):
 
     @property
     def message(self) -> str:
-        layers_str = "', '".join(self.layers)
-        return f"Layers [{layers_str}] cannot use restricted library '{self.lib_name}'"
+        layers_str = ", ".join(self.layers)
+        return f"Layers [{layers_str} or 'not-defined'] cannot use restricted library '{self.lib_name}'"
 
     def __str__(self):
         return f"{self.file_path}:{self.line_number}: {self.message}"
