@@ -12,7 +12,7 @@ class LayerConfig:
 
 @dataclass
 class LibConfig:
-    upstream: Optional[List[str]]  # Layers allowed to use this lib
+    allowed_in: Optional[List[str]]  # Layers allowed to use this lib
 
 
 def load_config(
@@ -49,14 +49,14 @@ def load_config(
 
     libs = {}
     for lib_name, lib_info in libs_config.items():
-        upstream = lib_info.get("upstream", "none")
-        if upstream == "none":
-            upstream_parsed = None
-        elif isinstance(upstream, list):
-            upstream_parsed = upstream
+        allowed_in = lib_info.get("allowed_in", "none")
+        if allowed_in == "none":
+            allowed_in_parsed = None
+        elif isinstance(allowed_in, list):
+            allowed_in_parsed = allowed_in
         else:
-            upstream_parsed = None
+            allowed_in_parsed = None
 
-        libs[lib_name] = LibConfig(upstream=upstream_parsed)
+        libs[lib_name] = LibConfig(allowed_in=allowed_in_parsed)
 
     return layers, libs, exclude_modules

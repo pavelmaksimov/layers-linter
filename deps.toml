@@ -120,13 +120,13 @@ depends_on = ["libs"]
 # Условия на зависимость от библиотек и фреймворков.
 [libs]
 [libs.sqlalchemy]
-upstream = ["infrastructure"] # Эи слои могут импортировать этот пакет, а другие нет.
+allowed_in = ["infrastructure"] # Эи слои могут импортировать этот пакет, а другие нет.
 
 [libs.pydantic]
-upstream = ["helpers"]
+allowed_in = ["libs", "domainhelpers"]
 
 [libs.fastapi]
-upstream = ["presentation"]
+allowed_in = ["presentation"]
 
 [libs.argparse]
-upstream = ["presentation"]
+allowed_in = ["presentation"]

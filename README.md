@@ -100,7 +100,7 @@ depends_on = ["dicontainer"]
 
 [libs.presentation]
 # Layers that can use this library (if not specified, all layers can use it)
-upstream = ["fastapi"]
+allowed_in = ["fastapi"]
 ```
 
 ### Pattern Matching

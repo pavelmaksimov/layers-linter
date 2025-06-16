@@ -122,13 +122,13 @@ def analyze_dependencies(
                 lib_config = libs[lib_name]
 
                 # If library has no restrictions, skip
-                if lib_config.upstream is None:
+                if lib_config.allowed_in is None:
                     continue
 
                 # Check if any of the module's layers are allowed to use this library
                 allowed = False
                 for layer_name in layers_a:
-                    if layer_name in lib_config.upstream:
+                    if layer_name in lib_config.allowed_in:
                         allowed = True
                         break
 

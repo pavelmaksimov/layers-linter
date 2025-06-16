@@ -33,7 +33,7 @@ def test_valid_dependency(temp_project):
     """
     Tests that the analyzer correctly validates dependencies between layers
     and external libraries when they are properly configured in the configuration file.
-    Checks that layers can use libraries that are specified in their upstream list.
+    Checks that layers can use libraries that are specified in their allowed_in list.
     """
     toml_config = """
 exclude_modules = []
@@ -53,16 +53,16 @@ contains_modules = ["project.helpers.*"]
 
 [libs]
 [libs.sqlalchemy]
-upstream = ["infrastructure"]
+allowed_in = ["infrastructure"]
 
 [libs.pydantic]
-upstream = ["helpers"]
+allowed_in = ["helpers"]
 
 [libs.fastapi]
-upstream = ["presentation"]
+allowed_in = ["presentation"]
 
 [libs.argparse]
-upstream = ["presentation"]
+allowed_in = ["presentation"]
 """
 
     project_structure = {
@@ -90,7 +90,7 @@ import fastapi
 def test_invalid_library_usage(temp_project):
     """
     Tests that the analyzer correctly identifies invalid library usage
-    when a layer imports a library that is not specified in its upstream list.
+    when a layer imports a library that is not specified in its allowed_in list.
     Verifies that the correct error code (LA020) is reported.
     """
     toml_config = """
@@ -105,7 +105,7 @@ contains_modules = ["project.infrastructure.*"]
 
 [libs]
 [libs.sqlalchemy]
-upstream = ["infrastructure"]
+allowed_in = ["infrastructure"]
 """
 
     project_structure = {"domain/service.py": """import sqlalchemy"""}
