@@ -37,7 +37,10 @@ class LayerProblem(Problem):
 
     @property
     def message(self) -> str:
-        return f"Invalid dependency from layer '{self.layer_from}' to layer '{self.layer_to}'"
+        return (
+            f"Invalid layer dependency: '{self.layer_from or 'not-defined'}' "
+            f"-> '{self.layer_to or 'not-defined'}'"
+        )
 
     def __str__(self):
         return f"{self.file_path}:{self.line_number}: {self.message}"
