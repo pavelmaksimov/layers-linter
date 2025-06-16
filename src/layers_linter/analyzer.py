@@ -74,6 +74,17 @@ def analyze_dependencies(
     module_to_layers: Dict[ModulePathT, List[str]] = defaultdict(list)
     for _, module_path in modules_list:
         for layer_name, layer_info in layers.items():
+            # Check if module should be excluded for this layer
+            excluded = False
+            if layer_info.exclude_modules:
+                for pattern in layer_info.exclude_modules:
+                    if match_pattern(module_path, pattern):
+                        excluded = True
+                        break
+
+            if excluded:
+                continue
+
             for pattern in layer_info.contains_modules:
                 if match_pattern(module_path, pattern):
                     module_to_layers[module_path].append(layer_name)

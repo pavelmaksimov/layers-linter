@@ -257,3 +257,35 @@ depends_on = []
     assert "project.shared.common" in str(excinfo.value)
     assert "domain" in str(excinfo.value)
     assert "infrastructure" in str(excinfo.value)
+
+
+def test_layer_exclude_modules(temp_project):
+    """
+    Tests that the analyzer correctly excludes modules specified in the exclude_modules list
+    at the layer level, preventing them from being considered part of that layer.
+    """
+    toml_config = """
+exclude_modules = []
+
+[layers]
+[layers.domain]
+contains_modules = ["project.domain.*"]
+depends_on = ["libs"]
+exclude_modules = ["project.domain.base"]
+
+[layers.libs]
+contains_modules = ["project.domain.base"]
+depends_on = []
+"""
+
+    project_structure = {
+        "domain/service.py": """from project.domain.base import Database""",
+        "domain/base.py": """class Database: pass""",
+    }
+
+    config_path = temp_project(toml_config, project_structure)
+    layers, libs, exclude_modules = load_config(config_path)
+    project_root = config_path.parent / "project"
+    problems = analyze_dependencies(project_root, layers, libs, [])
+
+    assert not problems

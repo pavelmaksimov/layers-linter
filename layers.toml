@@ -17,6 +17,7 @@ contains_modules = [
     "example_project.domains.*.use_cases.*",
     "example_project.domains.*.use_cases",
 ]
+exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
 depends_on = ["libs", "libs"]
 
 
@@ -26,6 +27,7 @@ contains_modules = [
     "example_project.domains.*.validations.*",
     "example_project.domains.*.validations",
 ]
+exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
 depends_on = ["libs", "libs"]
 
 
@@ -35,6 +37,7 @@ contains_modules = [
     "example_project.domains.*.services.*",
     "example_project.domains.*.service",
 ]
+exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
 depends_on = ["core", "libs", "libs"]
 
 
@@ -48,6 +51,7 @@ contains_modules = [
     "example_project.domains.*.value_objects.*",
     "example_project.domains.*.value_objects",
 ]
+exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
 depends_on = ["libs", "libs"]
 
 
@@ -61,6 +65,7 @@ contains_modules = [
     "example_project.domains.*.models.*",
     "example_project.domains.*.models",
 ]
+exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
 depends_on = ["libs"]
 
 
@@ -79,6 +84,7 @@ contains_modules = [
     "example_project.domains.*.cli.*",
     "example_project.domains.*.cli",
 ]
+exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
 depends_on = ["dicontainer", "usecases", "libs"]
 
 
@@ -93,6 +99,7 @@ depends_on = [] # Не может использовать другие слои
 [layers.libs]
 description = ""
 contains_modules = [
+    "example_project.domains.base.*",
     "example_project.logger",
     "example_project.datatypes",
     "example_project.settings",

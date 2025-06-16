@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 class LayerConfig:
     contains_modules: List[str]
     depends_on: Optional[List[str]]
+    exclude_modules: Optional[List[str]]
 
 
 @dataclass
@@ -42,9 +43,14 @@ def load_config(
         if not isinstance(contains_modules, list):
             contains_modules = []
 
+        exclude_modules_layer = layer_info.get("exclude_modules", [])
+        if not isinstance(exclude_modules_layer, list):
+            exclude_modules_layer = []
+
         layers[layer_name] = LayerConfig(
             contains_modules=contains_modules,
             depends_on=depends_on_parsed,
+            exclude_modules=exclude_modules_layer,
         )
 
     libs = {}
