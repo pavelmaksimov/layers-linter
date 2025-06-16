@@ -7,8 +7,7 @@ from typing import Dict, List, Optional
 @dataclass
 class LayerConfig:
     contains_modules: List[str]
-    upstream: Optional[List[str]]
-    downstream: Optional[List[str]]
+    depends_on: Optional[List[str]]
 
 
 @dataclass
@@ -31,21 +30,13 @@ def load_config(
 
     layers = {}
     for layer_name, layer_info in layers_config.items():
-        upstream = layer_info.get("upstream", "none")
-        if upstream == "none":
-            upstream_parsed = None
-        elif isinstance(upstream, list):
-            upstream_parsed = upstream
+        depends_on = layer_info.get("depends_on", "none")
+        if depends_on == "none":
+            depends_on_parsed = None
+        elif isinstance(depends_on, list):
+            depends_on_parsed = depends_on
         else:
-            upstream_parsed = None
-
-        downstream = layer_info.get("downstream", "none")
-        if downstream == "none":
-            downstream_parsed = None
-        elif isinstance(downstream, list):
-            downstream_parsed = downstream
-        else:
-            downstream_parsed = None
+            depends_on_parsed = None
 
         contains_modules = layer_info.get("contains_modules", [])
         if not isinstance(contains_modules, list):
@@ -53,8 +44,7 @@ def load_config(
 
         layers[layer_name] = LayerConfig(
             contains_modules=contains_modules,
-            upstream=upstream_parsed,
-            downstream=downstream_parsed,
+            depends_on=depends_on_parsed,
         )
 
     libs = {}

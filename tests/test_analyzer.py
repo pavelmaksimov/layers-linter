@@ -38,13 +38,11 @@ exclude_modules = []
 [layers]
 [layers.domain]
 contains_modules = ["project.domain.*"]
-upstream = []
-downstream = ["infrastructure"]
+depends_on = ["infrastructure"]
 
 [layers.infrastructure]
 contains_modules = ["project.infrastructure.*"]
-upstream = ["domain"]
-downstream = []
+depends_on = []
 """
 
     project_structure = {
@@ -62,11 +60,10 @@ downstream = []
     assert problems[0].layer_from == "infrastructure"
 
 
-def test_valid_dependency_downstream(temp_project):
+def test_valid_dependency_depends_on(temp_project):
     """
-    Tests that the analyzer correctly identifies a dependency violation when
-    domain imports from infrastructure, which is allowed in the downstream configuration
-    but still reported as a problem because it's not in the upstream configuration.
+    Tests that the analyzer correctly identifies a valid dependency when
+    domain imports from infrastructure, which is allowed in the depends_on configuration.
     """
     toml_config = """
 exclude_modules = []
@@ -74,13 +71,11 @@ exclude_modules = []
 [layers]
 [layers.domain]
 contains_modules = ["project.domain.*"]
-upstream = []
-downstream = ["infrastructure"]
+depends_on = ["infrastructure"]
 
 [layers.infrastructure]
 contains_modules = ["project.infrastructure.*"]
-upstream = []
-downstream = []
+depends_on = []
 """
 
     project_structure = {
@@ -93,16 +88,14 @@ downstream = []
     project_root = config_path.parent / "project"
     problems = analyze_dependencies(project_root, layers, libs, [])
 
-    assert len(problems) == 1
-    assert problems[0].layer_to == "infrastructure"
-    assert problems[0].layer_from == "domain"
+    assert len(problems) == 0
 
 
-def test_valid_dependency_upstream(temp_project):
+def test_invalid_dependency_depends_on(temp_project):
     """
     Tests that the analyzer correctly identifies a dependency violation when
     domain imports from infrastructure, which is not allowed in the configuration
-    because domain is not in infrastructure's downstream list.
+    because infrastructure is not in domain's depends_on list.
     """
     toml_config = """
 exclude_modules = []
@@ -110,13 +103,11 @@ exclude_modules = []
 [layers]
 [layers.domain]
 contains_modules = ["project.domain.*"]
-upstream = []
-downstream = []
+depends_on = []
 
 [layers.infrastructure]
 contains_modules = ["project.infrastructure.*"]
-upstream = ["domain"]
-downstream = []
+depends_on = []
 """
 
     project_structure = {
@@ -143,13 +134,11 @@ exclude_modules = []
 [layers]
 [layers.domain]
 contains_modules = ["project.domain.*"]
-upstream = []
-downstream = ["infrastructure"]
+depends_on = ["infrastructure"]
 
 [layers.infrastructure]
 contains_modules = ["project.infrastructure.*"]
-upstream = ["domain"]
-downstream = []
+depends_on = []
     """
 
     project_structure = {
@@ -182,13 +171,11 @@ exclude_modules = ["*.db"]
 [layers]
 [layers.domain]
 contains_modules = ["project.domain.*"]
-upstream = []
-downstream = ["infrastructure"]
+depends_on = ["infrastructure"]
 
 [layers.infrastructure]
 contains_modules = ["project.infrastructure.*"]
-upstream = ["domain"]
-downstream = []
+depends_on = []
     """
 
     project_structure = {
@@ -207,7 +194,7 @@ downstream = []
 def test_invalid_dependency2(temp_project):
     """
     Tests that the analyzer correctly identifies multiple dependency violations
-    when neither layer has downstream or upstream configurations that allow
+    when neither layer has depends_on configurations that allow
     the dependencies between them.
     """
     toml_config = """
@@ -216,13 +203,11 @@ exclude_modules = []
 [layers]
 [layers.domain]
 contains_modules = ["project.domain.*"]
-upstream = []
-downstream = []
+depends_on = []
 
 [layers.infrastructure]
 contains_modules = ["project.infrastructure.*"]
-upstream = []
-downstream = []
+depends_on = []
 """
 
     project_structure = {

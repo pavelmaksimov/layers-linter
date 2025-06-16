@@ -73,10 +73,8 @@ description = ""
 contains_modules = [
     "project.container"
 ]
-# Layers that can use this layer (if empty list, no other layers can use it)
-upstream = ["presentation"]
 # Layers that this layer can use (if empty list, it can't use any other layers)
-downstream = ["usecases"]
+depends_on = ["usecases"]
 
 
 [layers.usecases]
@@ -85,8 +83,7 @@ contains_modules = [
     "project.domains.*.use_cases.*",
     "project.domains.*.use_cases",
 ]
-upstream = ["dicontainer", "presentation"]
-downstream = []
+depends_on = []
 
 
 [layers.presentation]
@@ -95,8 +92,7 @@ contains_modules = [
     "project.presentation.*",
     "project.domains.*.endpoints"
 ]
-upstream = []
-downstream = ["dicontainer"]
+depends_on = ["dicontainer"]
 
 
 # Library restrictions
@@ -118,11 +114,7 @@ The `contains_modules` field supports pattern matching with wildcards:
 
 ### Dependency Rules
 
-- **Upstream**: Controls which layers can use this layer
-  - Empty list (`[]`): No other layers can use this layer
-  - Not specified or `"none"`: No restrictions
-
-- **Downstream**: Controls which layers this layer can use
+- **depends_on**: Controls which layers this layer can use
   - Empty list (`[]`): This layer cannot use any other layers
   - Not specified or `"none"`: No restrictions
 

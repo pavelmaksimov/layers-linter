@@ -73,19 +73,13 @@ def analyze_dependencies(
                     la = layers[la_name]
                     lb = layers[lb_name]
 
-                    # Downstream check: layer A can only depend on those specified in download.
-                    downstream_ok = True
-                    if la.downstream is not None:
-                        if lb_name not in la.downstream:
-                            downstream_ok = False
+                    # Depends_on check: layer A can only depend on those specified in depends_on.
+                    depends_on_ok = True
+                    if la.depends_on is not None:
+                        if lb_name not in la.depends_on:
+                            depends_on_ok = False
 
-                    # Verification Upstream: layer B can only be used in Upstream.
-                    upstream_ok = True
-                    if lb.upstream is not None:
-                        if la_name not in lb.upstream:
-                            upstream_ok = False
-
-                    if downstream_ok and upstream_ok:
+                    if depends_on_ok:
                         allowed = True
                         break
                 if allowed:

@@ -8,8 +8,7 @@ description = ""
 contains_modules = [
     "example_project.container"
 ]
-upstream = ["presentation"] # Другие слои кроме этих не могут использовать этот слой
-downstream = ["usecases", "infrastructure", "libs", "domainhelpers"]
+depends_on = ["usecases", "infrastructure", "libs", "domainhelpers"]
 
 
 [layers.usecases]
@@ -18,9 +17,7 @@ contains_modules = [
     "example_project.domains.*.use_cases.*",
     "example_project.domains.*.use_cases",
 ]
-upstream = ["dicontainer", "presentation"]
-# downstream = "none" # Если не указан, значит не запрещено, нет правил нет ограничений
-downstream = ["libs", "domainhelpers"]
+depends_on = ["libs", "domainhelpers"]
 
 
 [layers.validation]
@@ -29,8 +26,7 @@ contains_modules = [
     "example_project.domains.*.validations.*",
     "example_project.domains.*.validations",
 ]
-upstream = ["usecases"]
-downstream = ["libs", "domainhelpers"]
+depends_on = ["libs", "domainhelpers"]
 
 
 [layers.services]
@@ -39,8 +35,7 @@ contains_modules = [
     "example_project.domains.*.services.*",
     "example_project.domains.*.service",
 ]
-upstream = ["usecases", "services"]
-downstream = ["core", "libs", "domainhelpers"]
+depends_on = ["core", "libs", "domainhelpers"]
 
 
 [layers.core]
@@ -53,8 +48,7 @@ contains_modules = [
     "example_project.domains.*.value_objects.*",
     "example_project.domains.*.value_objects",
 ]
-upstream = ["usecases", "services"]
-downstream = ["libs", "domainhelpers"]
+depends_on = ["libs", "domainhelpers"]
 
 
 [layers.infrastructure]
@@ -67,8 +61,7 @@ contains_modules = [
     "example_project.domains.*.models.*",
     "example_project.domains.*.models",
 ]
-upstream = "none" # Если не указан, значит не запрещено, нет правил нет ограничений
-downstream = ["libs"]
+depends_on = ["libs"]
 
 
 [layers.presentation]
@@ -86,9 +79,7 @@ contains_modules = [
     "example_project.domains.*.cli.*",
     "example_project.domains.*.cli",
 ]
-isolated-from-layers = ["services", "core"]
-upstream = [] # Не может быть использован в других слоях.
-downstream = ["dicontainer", "usecases", "libs"]
+depends_on = ["dicontainer", "usecases", "libs"]
 
 
 [layers.autonomy]
@@ -96,8 +87,7 @@ description = ""
 contains_modules = [
     "example_project.alembic.*",
 ]
-upstream = [] # Не может быть использован в других слоях.
-downstream = [] # Не может использовать другие слои.
+depends_on = [] # Не может использовать другие слои.
 
 
 [layers.libs]
@@ -105,16 +95,15 @@ description = ""
 contains_modules = [
     "example_project.logger",
     "example_project.datatypes",
-    "example_project.types",
     "example_project.settings",
     "example_project.utils.*",
     "example_project.utils",
     "example_project.libs.*",
     "example_project.libs",
     "example_project.exceptions",
+    "example_project.domains.*.exceptions",
 ]
-upstream = "none"
-downstream = [] # Не может использовать другие слои.
+depends_on = [] # Не может использовать другие слои.
 
 
 [layers.domainhelpers]
@@ -124,10 +113,8 @@ contains_modules = [
     "example_project.domains.*.schemas",
     "example_project.domains.*.dto",
     "example_project.domains.*.enums",
-    "example_project.domains.*.exceptions",
 ]
-upstream = "none"
-downstream = ["libs"]
+depends_on = ["libs"]
 
 
 # Условия на зависимость от библиотек и фреймворков.
