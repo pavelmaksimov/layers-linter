@@ -15,9 +15,14 @@ def main():
         default="layers.toml",
         help="Path to configuration file (default: layers.toml)",
     )
+    parser.add_argument(
+        "--no-check-no-layer",
+        action="store_true",
+        help="Disable checking for modules that don't belong to any layer",
+    )
     args = parser.parse_args()
 
-    problems = run_linter(args.path, args.config)
+    problems = run_linter(args.path, args.config, check_no_layer=not args.no_check_no_layer)
     for problem in problems:
         print(problem, file=sys.stderr)
 

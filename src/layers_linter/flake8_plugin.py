@@ -7,7 +7,7 @@ from layers_linter.config import load_config
 
 class LayersLinter:
     name = "layers-linter"
-    version = "3.1.0"
+    version = "3.2.0"
 
     def __init__(self, tree, filename, lines, options):
         self.filename = Path(filename).resolve()
@@ -37,7 +37,7 @@ class LayersLinter:
         layers, libs, exclude_modules = load_config(config_path)
 
         for problem in analyze_dependencies(
-            self.options.filenames[0], layers, libs, exclude_modules
+            self.options.filenames[0], layers, libs, exclude_modules, check_no_layer=True
         ):
             yield (problem.line_number, 0, f"{problem.code} {problem.message}", LayersLinter)
 

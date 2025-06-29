@@ -34,6 +34,9 @@ layers-linter /path/to/your/project
 
 # With custom configuration file
 layers-linter /path/to/your/project --config /path/to/your/layers.toml
+
+# Disable checking for modules without a layer
+layers-linter /path/to/your/project --no-check-no-layer
 ```
 
 ### Flake8 Plugin
@@ -123,6 +126,9 @@ The `contains_modules` field supports pattern matching with wildcards:
 
 - **LA001**: Invalid dependency between layers
   - Example: `Invalid dependency from layer 'presentation' to layer 'repositories'`
+
+- **LA002**: Module without a layer
+  - Example: `Module 'project.utils.helpers' does not belong to any layer`
 
 - **LA020**: Restricted library usage
   - Example: `Layers [presentation] cannot use restricted library 'sqlalchemy'`

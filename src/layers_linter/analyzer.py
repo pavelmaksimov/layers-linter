@@ -1,4 +1,3 @@
-from abc import ABC
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,7 +14,7 @@ from layers_linter.search_modules import (
 
 
 @dataclass
-class Problem(ABC):
+class Problem:
     line_number: int
     module_path: str
     imported_module: str
@@ -60,11 +59,22 @@ class LibProblem(Problem):
         return f"{self.file_path}:{self.line_number}: {self.message}"
 
 
+@dataclass
+class NoLayerProblem(Problem):
+    @property
+    def message(self) -> str:
+        return f"Module '{self.module_path}' does not belong to any layer"
+
+    def __str__(self):
+        return f"{self.file_path}: {self.message}"
+
+
 def analyze_dependencies(
     project_root: Path,
     layers: Dict[str, LayerConfig],
     libs: Dict[str, LibConfig],
     exclude_modules: List[str],
+    check_no_layer: bool = False,
 ) -> List[Problem]:
     modules_list = find_modules_in_directory(
         FilePathT(project_root), patterns=None, exclude_patterns=exclude_modules
@@ -189,9 +199,21 @@ def analyze_dependencies(
                         )
                     )
 
+    if check_no_layer:
+        for file_path, module_path in modules_list:
+            if module_path not in module_to_layers:
+                problems.append(
+                    NoLayerProblem(
+                        line_number=0,
+                        module_path=module_path,
+                        imported_module="",
+                        code="LA002",
+                    )
+                )
+
     return problems
 
 
-def run_linter(project_root: Path, config_path: Path) -> List[Problem]:
+def run_linter(project_root: Path, config_path: Path, check_no_layer: bool = False) -> List[Problem]:
     layers, libs, exclude_modules = load_config(config_path)
-    return analyze_dependencies(project_root, layers, libs, exclude_modules)
+    return analyze_dependencies(project_root, layers, libs, exclude_modules, check_no_layer)

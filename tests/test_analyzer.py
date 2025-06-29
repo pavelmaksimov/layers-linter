@@ -289,3 +289,42 @@ depends_on = []
     problems = analyze_dependencies(project_root, layers, libs, [])
 
     assert not problems
+
+
+def test_check_no_layer(temp_project):
+    """
+    Tests that the analyzer correctly identifies modules that don't belong to any layer
+    when the check_no_layer option is enabled.
+    """
+    toml_config = """
+exclude_modules = []
+
+[layers]
+[layers.domain]
+contains_modules = ["project.domain.*"]
+depends_on = []
+
+[layers.infrastructure]
+contains_modules = ["project.infrastructure.*"]
+depends_on = []
+"""
+
+    project_structure = {
+        "domain/service.py": """# This module belongs to domain layer""",
+        "infrastructure/db.py": """# This module belongs to infrastructure layer""",
+        "utils/helpers.py": """# This module doesn't belong to any layer""",
+    }
+
+    config_path = temp_project(toml_config, project_structure)
+    layers, libs, exclude_modules = load_config(config_path)
+    project_root = config_path.parent / "project"
+
+    # Without check_no_layer option
+    problems = analyze_dependencies(project_root, layers, libs, [])
+    assert len(problems) == 0
+
+    # With check_no_layer option
+    problems = analyze_dependencies(project_root, layers, libs, [], check_no_layer=True)
+    assert len(problems) == 1
+    assert problems[0].module_path == "project.utils.helpers"
+    assert problems[0].code == "LA002"
