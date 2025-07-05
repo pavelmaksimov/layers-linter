@@ -7,7 +7,7 @@ from layers_linter.config import load_config
 
 class LayersLinter:
     name = "layers-linter"
-    version = "3.2.1"
+    version = "3.2.2"
 
     def __init__(self, tree, filename, lines, options):
         self.filename = Path(filename).resolve()
