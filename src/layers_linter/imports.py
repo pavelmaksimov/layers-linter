@@ -51,7 +51,7 @@ class ImportVisitor(ast.NodeVisitor):
         self.process_import(node, module_name)
 
     def visit_If(self, node: ast.If):
-        if isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
+        if isinstance(node.test, ast.Name) and "TYPE_CHECKING" in node.test.id:
             old_flag = self.inside_type_checking
             self.inside_type_checking = True
             for stmt in node.body:
