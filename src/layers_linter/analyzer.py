@@ -1,5 +1,5 @@
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Dict
 
@@ -19,6 +19,7 @@ class Problem:
     module_path: str
     imported_module: str
     code: str
+    source_path: Path | None = field(default=None, kw_only=True)
 
     @property
     def message(self) -> str:
@@ -26,6 +27,8 @@ class Problem:
 
     @property
     def file_path(self) -> str:
+        if self.source_path is not None:
+            return str(self.source_path)
         return self.module_path.replace(".", "/") + ".py"
 
 
@@ -80,6 +83,7 @@ def analyze_dependencies(
         FilePathT(project_root), patterns=None, exclude_patterns=exclude_modules
     )
     all_project_modules = set(module_path for _, module_path in modules_list)
+    module_to_file = {module_path: file_path for file_path, module_path in modules_list}
 
     module_to_layers: Dict[ModulePathT, List[str]] = defaultdict(list)
     for _, module_path in modules_list:
@@ -130,8 +134,9 @@ def analyze_dependencies(
                     la = layers[la_name]
 
                     # Depends_on check: layer A can only depend on those specified in depends_on.
+                    # Imports within the same layer are always allowed.
                     depends_on_ok = True
-                    if la.depends_on is not None:
+                    if la_name != lb_name and la.depends_on is not None:
                         if lb_name not in la.depends_on:
                             depends_on_ok = False
 
@@ -152,6 +157,7 @@ def analyze_dependencies(
                                 layer_from=la_name,
                                 layer_to=lb_name,
                                 code="LA001",
+                                source_path=module_to_file[module_path],
                             )
                         )
 
@@ -196,6 +202,7 @@ def analyze_dependencies(
                             code="LA020",
                             lib_name=lib_name,
                             layers=layers_a,
+                            source_path=module_to_file[module_path],
                         )
                     )
 
@@ -208,6 +215,7 @@ def analyze_dependencies(
                         module_path=module_path,
                         imported_module="",
                         code="LA002",
+                        source_path=file_path,
                     )
                 )
 

@@ -1,7 +1,7 @@
 import pytest
 
-from src.layers_linter.analyzer import analyze_dependencies
-from src.layers_linter.config import load_config
+from layers_linter.analyzer import analyze_dependencies
+from layers_linter.config import load_config
 
 
 @pytest.fixture

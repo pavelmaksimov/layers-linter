@@ -101,9 +101,9 @@ depends_on = ["dicontainer"]
 # Library restrictions
 [libs]
 
-[libs.presentation]
+[libs.fastapi]
 # Layers that can use this library (if not specified, all layers can use it)
-allowed_in = ["fastapi"]
+allowed_in = ["presentation"]
 ```
 
 ### Pattern Matching
@@ -111,15 +111,21 @@ allowed_in = ["fastapi"]
 The `contains_modules` field supports pattern matching with wildcards:
 
 - `project.module` - Exact match
-- `project.module.*` - Module and all submodules
-- `project.*.module` - Any module with the specified pattern
+- `project.module.*` - All submodules (the module itself is not matched, list it separately)
+- `project.*.module` - Any module with the specified pattern (`*` also matches dots)
 - `*.module` - Any module ending with the specified pattern
+
+Module names start with the name of the checked directory, e.g. for
+`layers-linter /path/to/project` the file `/path/to/project/domains/user.py` is `project.domains.user`.
+When the path is `.`, module names are relative to the current directory.
+Hidden directories (`.venv`, `.git`, ...) are skipped.
 
 ### Dependency Rules
 
 - **depends_on**: Controls which layers this layer can use
   - Empty list (`[]`): This layer cannot use any other layers
   - Not specified or `"none"`: No restrictions
+  - Modules of the same layer can always import each other
 
 
 ## Error Codes
@@ -136,4 +142,6 @@ The `contains_modules` field supports pattern matching with wildcards:
 ## Notes
 
 - Imports inside `if typing.TYPE_CHECKING:` blocks are ignored
+- `from package import submodule` (including relative `from . import submodule`) is treated as a dependency on the submodule
+- The CLI exits with code `1` if problems were found and `2` on configuration errors
 - The linter builds a complete dependency graph before validation, allowing for comprehensive analysis
