@@ -148,7 +148,7 @@ def test_file_with_syntax_error_is_skipped(temp_project):
 
 
 def test_cli_exit_code(temp_project, monkeypatch):
-    structure = {"domain/m%d.py" % i: "import project.infrastructure.db" for i in range(256)}
+    structure = {f"domain/m{i}.py": "import project.infrastructure.db" for i in range(256)}
     structure["infrastructure/db.py"] = ""
     config_path, project_root = temp_project(structure)
 
@@ -181,7 +181,6 @@ def test_flake8_plugin_reports_only_problems_of_checked_file(temp_project, monke
             "stray.py": "",
         }
     )
-    monkeypatch.setattr(LayersLinter, "_problems_cache", {})
     options = SimpleNamespace(la_config=str(config_path), filenames=[str(project_root)])
 
     def run(file_path):
@@ -193,3 +192,83 @@ def test_flake8_plugin_reports_only_problems_of_checked_file(temp_project, monke
     assert [(line, code.split()[0]) for line, _, code, _ in run(project_root / "stray.py")] == [
         (1, "LA002")
     ]
+
+
+def test_import_of_package_uses_its_init_layer(temp_project):
+    """'import package' depends on the package's __init__ module."""
+    toml_config = TOML_CONFIG.replace('exclude_modules = ["*.__init__"]', "exclude_modules = []")
+    config_path, project_root = temp_project(
+        {
+            "domain/service.py": "import project.infrastructure",
+            "infrastructure/__init__.py": "",
+        },
+        toml_config,
+    )
+
+    problems = analyze(config_path, project_root)
+
+    assert len(problems) == 1
+    assert problems[0].imported_module == "project.infrastructure.__init__"
+    assert problems[0].layer_to == "infrastructure"
+
+
+def test_import_of_package_is_not_a_library(temp_project):
+    """A project package is never matched against [libs] even if its __init__ is excluded."""
+    toml_config = TOML_CONFIG + '\n[libs.project]\nallowed_in = ["infrastructure"]\n'
+    config_path, project_root = temp_project(
+        {
+            "domain/__init__.py": "",
+            "domain/service.py": "import project.domain\nfrom project import domain",
+        },
+        toml_config,
+    )
+
+    assert analyze(config_path, project_root) == []
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "from typing import TYPE_CHECKING as TC\nif TC:\n    import project.infrastructure.db\n",
+        "from typing import TYPE_CHECKING\n"
+        "if not TYPE_CHECKING:\n    pass\nelse:\n    import project.infrastructure.db\n",
+    ],
+)
+def test_type_checking_variants_are_ignored(temp_project, source):
+    config_path, project_root = temp_project(
+        {"domain/service.py": source, "infrastructure/db.py": ""}
+    )
+
+    assert analyze(config_path, project_root) == []
+
+
+def test_runtime_branch_of_negated_type_checking_is_checked(temp_project):
+    source = (
+        "from typing import TYPE_CHECKING\n"
+        "if not TYPE_CHECKING:\n"
+        "    import project.infrastructure.db\n"
+    )
+    config_path, project_root = temp_project(
+        {"domain/service.py": source, "infrastructure/db.py": ""}
+    )
+
+    assert len(analyze(config_path, project_root)) == 1
+
+
+def test_flake8_plugin_cache_lives_one_run(temp_project):
+    """Each flake8 run (options object) analyzes the project anew."""
+    config_path, project_root = temp_project({"domain/service.py": "", "infrastructure/db.py": ""})
+    service = project_root / "domain/service.py"
+
+    def run(options):
+        return list(LayersLinter(None, str(service), [], options).run())
+
+    def new_options():
+        return SimpleNamespace(la_config=str(config_path), filenames=[str(project_root)])
+
+    first_run = new_options()
+    assert run(first_run) == []
+
+    service.write_text("import project.infrastructure.db")
+    assert run(first_run) == []  # cached within the same run
+    assert len(run(new_options())) == 1

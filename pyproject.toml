@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "layers-linter"
 version = "3.2.2"
@@ -39,5 +43,5 @@ include = ["src/**/*.py", "tests/**/*.py", "example_project/**/*.py"]
 [tool.ruff.format]
 line-ending = "lf"
 
-[tool.ruff.lint.flake8-copyright]
-author = "Ruff"
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4"]

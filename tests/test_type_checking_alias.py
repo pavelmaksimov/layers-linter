@@ -119,8 +119,8 @@ if TYPE_CHECKING:
 
 def test_type_checking_alias_with_real_imports(temp_project):
     """
-    Tests that the analyzer correctly handles a mix of TYPE_CHECKING imports (which should be ignored)
-    and real imports (which should be analyzed) when using aliases.
+    Tests that the analyzer correctly handles a mix of TYPE_CHECKING imports
+    (which should be ignored) and real imports (which should be analyzed) when using aliases.
     """
     toml_config = """
 exclude_modules = []

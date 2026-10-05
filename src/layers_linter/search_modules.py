@@ -1,6 +1,6 @@
 import fnmatch
 from pathlib import Path
-from typing import List, Set, NewType
+from typing import NewType
 
 ModulePathT = NewType("ModulePathT", str)
 FilePathT = NewType("FilePathT", Path)
@@ -12,7 +12,8 @@ def match_pattern(module_name: ModulePathT, pattern: str) -> bool:
 
     Args:
         module_name: Full module name (e.g., 'project.domains.crm.models')
-        pattern: Pattern to match (e.g., "project.crm", "project.crm.*", "*.crm", "crm.*", "*.crm.*", "project.*.crm")
+        pattern: Pattern to match
+            (e.g., "project.crm", "project.crm.*", "*.crm", "crm.*", "*.crm.*", "project.*.crm")
 
     Returns:
         True if the module name matches the pattern, False otherwise
@@ -31,9 +32,9 @@ def match_pattern(module_name: ModulePathT, pattern: str) -> bool:
 
 def find_modules_in_directory(
     directory: FilePathT,
-    patterns: List[str] | None = None,
+    patterns: list[str] | None = None,
     exclude_patterns: list[str] | None = None,
-) -> List[tuple[FilePathT, ModulePathT]]:
+) -> list[tuple[FilePathT, ModulePathT]]:
     """
     Find modules in a directory based on specified inclusion and exclusion patterns.
 
@@ -64,7 +65,7 @@ def find_modules_in_directory(
     """
     assert patterns != []
 
-    modules: List[tuple[FilePathT, ModulePathT]] = []
+    modules: list[tuple[FilePathT, ModulePathT]] = []
     root_path = Path(directory)
 
     for file_path in sorted(root_path.rglob("*.py")):
@@ -87,7 +88,7 @@ def find_modules_in_directory(
     return modules
 
 
-def find_modules_by_patterns(directory: FilePathT, patterns: List[str]) -> Set[str]:
+def find_modules_by_patterns(directory: FilePathT, patterns: list[str]) -> set[str]:
     """
     Finds and returns a set of module names whose names match the given patterns
     from a specific directory. It searches for all modules within the directory
@@ -106,7 +107,7 @@ def find_modules_by_patterns(directory: FilePathT, patterns: List[str]) -> Set[s
     all_modules = find_modules_in_directory(directory)
     matching_modules = set()
 
-    for path, module in all_modules:
+    for _, module in all_modules:
         for pattern in patterns:
             if match_pattern(module, pattern):
                 matching_modules.add(module)

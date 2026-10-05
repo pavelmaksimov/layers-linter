@@ -18,6 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source files are read according to their PEP 263 encoding declaration
 - Hidden directories (`.venv`, `.git`, ...) are no longer scanned
 - Fixed the `[libs]` example in README
+- `import package` is treated as a dependency on the package's `__init__` module and is never matched against `[libs]`
+- `from typing import TYPE_CHECKING as TC` / `if TC:` and the `else` branch of `if not TYPE_CHECKING:` are recognized as type-checking-only code
+- Flake8 plugin cache lives for a single flake8 run, so long-lived processes don't see stale results
+- The wheel no longer installs a stray top-level `__init__.py` into `site-packages`
+- Fixed release dates of 1.0.0, 3.1.0 and 3.2.0 in this changelog
+
+### Changed
+
+- Declared the setuptools build backend in `pyproject.toml` and enabled ruff lint rules
 
 ## [3.2.2] - 2025-07-05
 
@@ -31,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved TYPE_CHECKING detection to handle more flexible patterns in import conditions
 
-## [3.2.0] - 2025-07-29
+## [3.2.0] - 2025-06-29
 
 ### Added
 
@@ -39,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `--no-check-no-layer` option to disable checking for modules without a layer
 - Added LA002 error code for modules without a layer
 
-## [3.1.0] - 2025-06-23
+## [3.1.0] - 2025-06-16
 
 ### Changed
 
@@ -83,7 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added detailed docstrings to analyzer test cases
 - General code refactoring for better maintainability
 
-## [1.0.0] - 2025-05-20
+## [1.0.0] - 2025-05-29
 
 ### Added
 
