@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Imports between modules of the same layer are no longer reported as LA001
+- `from package import submodule` and `from . import submodule` are now checked against the submodule's layer
+- Flake8 plugin reports problems only for the file being checked instead of repeating every project problem for each file, and analyzes the project once per run
+- CLI exit code is `1` when problems are found (it was the number of problems, which wraps to `0` at 256)
+- CLI prints a clear error for a missing config file or invalid configuration instead of a traceback
+- Files with syntax errors are skipped with a warning instead of crashing the linter
+- Source files are read according to their PEP 263 encoding declaration
+- Hidden directories (`.venv`, `.git`, ...) are no longer scanned
+- Fixed the `[libs]` example in README
+
 ## [3.2.2] - 2025-07-05
 
 ### Fixed
