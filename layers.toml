@@ -8,7 +8,7 @@ description = ""
 contains_modules = [
     "example_project.container"
 ]
-depends_on = ["usecases", "infrastructure", "libs", "libs"]
+depends_on = ["usecases", "infrastructure", "libs"]
 
 
 [layers.usecases]
@@ -18,7 +18,7 @@ contains_modules = [
     "example_project.domains.*.use_cases",
 ]
 exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
-depends_on = ["libs", "libs"]
+depends_on = ["libs"]
 
 
 [layers.validation]
@@ -28,7 +28,7 @@ contains_modules = [
     "example_project.domains.*.validations",
 ]
 exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
-depends_on = ["libs", "libs"]
+depends_on = ["libs"]
 
 
 [layers.services]
@@ -38,7 +38,7 @@ contains_modules = [
     "example_project.domains.*.service",
 ]
 exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
-depends_on = ["core", "libs", "libs"]
+depends_on = ["core", "libs"]
 
 
 [layers.core]
@@ -52,7 +52,7 @@ contains_modules = [
     "example_project.domains.*.value_objects",
 ]
 exclude_modules = ["example_project.domains.base.*"] # исключает модули из слоя
-depends_on = ["libs", "libs"]
+depends_on = ["libs"]
 
 
 [layers.infrastructure]
@@ -119,7 +119,7 @@ depends_on = [] # Не может использовать другие слои
 # Условия на зависимость от библиотек и фреймворков.
 [libs]
 [libs.sqlalchemy]
-allowed_in = ["infrastructure"] # Эи слои могут импортировать этот пакет, а другие нет.
+allowed_in = ["infrastructure"] # Эти слои могут импортировать этот пакет, а другие нет.
 
 [libs.pydantic]
 allowed_in = ["libs"]

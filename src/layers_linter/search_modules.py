@@ -26,7 +26,7 @@ def match_pattern(module_name: ModulePathT, pattern: str) -> bool:
         "*.crm.*",
         "project.*.crm"
     """
-    return fnmatch.fnmatch(module_name, pattern)
+    return fnmatch.fnmatchcase(module_name, pattern)
 
 
 def find_modules_in_directory(
@@ -67,7 +67,11 @@ def find_modules_in_directory(
     modules: List[tuple[FilePathT, ModulePathT]] = []
     root_path = Path(directory)
 
-    for file_path in root_path.rglob("*.py"):
+    for file_path in sorted(root_path.rglob("*.py")):
+        if any(part.startswith(".") for part in file_path.relative_to(root_path).parts):
+            # Hidden directories (.venv, .git, .tox, ...) can't contain importable modules.
+            continue
+
         relative_path = file_path.relative_to(root_path.parent)
         parts = list(relative_path.with_suffix("").parts)
         module_name = ModulePathT(".".join(parts))

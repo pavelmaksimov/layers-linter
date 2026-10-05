@@ -1,4 +1,5 @@
 import ast
+import warnings
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Set, List, Dict
@@ -41,14 +42,26 @@ class ImportVisitor(ast.NodeVisitor):
             if level > len(parts):
                 return
             base_parts = parts[:-level]
-            module = node.module
-            if not module:
+            if node.module:
+                base_parts.append(node.module)
+            if not base_parts:
                 return
-            new_parts = base_parts + [module]
-            module_name = ModulePathT(".".join(new_parts))
+            module_name = ModulePathT(".".join(base_parts))
         else:
             module_name = ModulePathT(node.module)
-        self.process_import(node, module_name)
+
+        # "from package import submodule" depends on the submodule itself,
+        # otherwise the dependency is on the module the names are taken from.
+        imported_from_module = False
+        for alias in node.names:
+            submodule = ModulePathT(f"{module_name}.{alias.name}")
+            if submodule in self.all_project_modules:
+                self.process_import(node, submodule)
+            else:
+                imported_from_module = True
+
+        if imported_from_module:
+            self.process_import(node, module_name)
 
     def visit_If(self, node: ast.If):
         is_type_checking = False
@@ -73,9 +86,14 @@ class ImportVisitor(ast.NodeVisitor):
 def collect_imports(all_project_modules, modules_list) -> Dict[ModulePathT, List[ImportInfo]]:
     module_imports: Dict[ModulePathT, List[ImportInfo]] = defaultdict(list)
     for path, module_path in modules_list:
-        with open(path) as f:
+        # Reading bytes lets ast honour the PEP 263 encoding declaration.
+        with open(path, "rb") as f:
             content = f.read()
-        tree = ast.parse(content)
+        try:
+            tree = ast.parse(content, filename=str(path))
+        except SyntaxError as e:
+            warnings.warn(f"Skipping {path}: {e}")
+            continue
         visitor = ImportVisitor(module_path, all_project_modules)
         visitor.visit(tree)
         module_imports[module_path].extend(visitor.imports)
