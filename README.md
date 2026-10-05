@@ -141,7 +141,8 @@ Hidden directories (`.venv`, `.git`, ...) are skipped.
 
 ## Notes
 
-- Imports inside `if typing.TYPE_CHECKING:` blocks are ignored
+- Imports inside `if typing.TYPE_CHECKING:` blocks are ignored (also `if t.TYPE_CHECKING:`, aliases like `from typing import TYPE_CHECKING as TC`, and the `else` branch of `if not TYPE_CHECKING:`)
+- `import package` is treated as a dependency on `package.__init__`
 - `from package import submodule` (including relative `from . import submodule`) is treated as a dependency on the submodule
 - The CLI exits with code `1` if problems were found and `2` on configuration errors
 - The linter builds a complete dependency graph before validation, allowing for comprehensive analysis

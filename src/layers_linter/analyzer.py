@@ -1,14 +1,13 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Dict
 
 from layers_linter.config import LayerConfig, LibConfig, load_config
 from layers_linter.imports import collect_imports
 from layers_linter.search_modules import (
+    FilePathT,
     ModulePathT,
     find_modules_in_directory,
-    FilePathT,
     match_pattern,
 )
 
@@ -51,12 +50,15 @@ class LayerProblem(Problem):
 @dataclass
 class LibProblem(Problem):
     lib_name: str
-    layers: List[str]
+    layers: list[str]
 
     @property
     def message(self) -> str:
         layers_str = ", ".join(self.layers)
-        return f"Layers [{layers_str or 'not-defined'}] cannot use restricted library '{self.lib_name}'"
+        return (
+            f"Layers [{layers_str or 'not-defined'}] "
+            f"cannot use restricted library '{self.lib_name}'"
+        )
 
     def __str__(self):
         return f"{self.file_path}:{self.line_number}: {self.message}"
@@ -74,18 +76,18 @@ class NoLayerProblem(Problem):
 
 def analyze_dependencies(
     project_root: Path,
-    layers: Dict[str, LayerConfig],
-    libs: Dict[str, LibConfig],
-    exclude_modules: List[str],
+    layers: dict[str, LayerConfig],
+    libs: dict[str, LibConfig],
+    exclude_modules: list[str],
     check_no_layer: bool = False,
-) -> List[Problem]:
+) -> list[Problem]:
     modules_list = find_modules_in_directory(
         FilePathT(project_root), patterns=None, exclude_patterns=exclude_modules
     )
-    all_project_modules = set(module_path for _, module_path in modules_list)
+    all_project_modules = {module_path for _, module_path in modules_list}
     module_to_file = {module_path: file_path for file_path, module_path in modules_list}
 
-    module_to_layers: Dict[ModulePathT, List[str]] = defaultdict(list)
+    module_to_layers: dict[ModulePathT, list[str]] = defaultdict(list)
     for _, module_path in modules_list:
         for layer_name, layer_info in layers.items():
             # Check if module should be excluded for this layer
@@ -135,10 +137,9 @@ def analyze_dependencies(
 
                     # Depends_on check: layer A can only depend on those specified in depends_on.
                     # Imports within the same layer are always allowed.
-                    depends_on_ok = True
-                    if la_name != lb_name and la.depends_on is not None:
-                        if lb_name not in la.depends_on:
-                            depends_on_ok = False
+                    depends_on_ok = (
+                        la_name == lb_name or la.depends_on is None or lb_name in la.depends_on
+                    )
 
                     if depends_on_ok:
                         allowed = True
@@ -222,6 +223,8 @@ def analyze_dependencies(
     return problems
 
 
-def run_linter(project_root: Path, config_path: Path, check_no_layer: bool = False) -> List[Problem]:
+def run_linter(
+    project_root: Path, config_path: Path, check_no_layer: bool = False
+) -> list[Problem]:
     layers, libs, exclude_modules = load_config(config_path)
     return analyze_dependencies(project_root, layers, libs, exclude_modules, check_no_layer)

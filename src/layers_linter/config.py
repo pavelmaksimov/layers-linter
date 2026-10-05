@@ -1,24 +1,23 @@
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
 @dataclass
 class LayerConfig:
-    contains_modules: List[str]
-    depends_on: Optional[List[str]]
-    exclude_modules: Optional[List[str]]
+    contains_modules: list[str]
+    depends_on: list[str] | None
+    exclude_modules: list[str] | None
 
 
 @dataclass
 class LibConfig:
-    allowed_in: Optional[List[str]]  # Layers allowed to use this lib
+    allowed_in: list[str] | None  # Layers allowed to use this lib
 
 
 def load_config(
     config_path: Path,
-) -> tuple[Dict[str, LayerConfig], Dict[str, LibConfig], List[str]]:
+) -> tuple[dict[str, LayerConfig], dict[str, LibConfig], list[str]]:
     with open(config_path, "rb") as f:
         raw_config = tomllib.load(f)
 
