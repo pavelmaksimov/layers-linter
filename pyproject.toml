@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "layers-linter"
-version = "3.2.2"
+version = "3.2.3"
 description = "A static code analyzer that enforces architectural boundaries for layers and outher libraries"
 readme = "README.md"
 requires-python = ">=3.11"
